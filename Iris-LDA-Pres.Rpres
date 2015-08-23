@@ -1,0 +1,190 @@
+<style>
+.reveal h3 { 
+  font-size: 40px;
+  color: black;
+}
+.reveal .slides section .slideContent h2 {
+   font-size: 20px;
+   font-weight: bold;
+   color: green;
+}
+.reveal ul, 
+.reveal ol {
+    font-size: 20px;
+    color: blue;
+    list-style-type: circle;
+}
+
+.reveal h1 { 
+  font-size: 0.9em; 
+}
+
+.reveal h1,
+.reveal h2,
+.reveal h3,
+.reveal h4,
+.reveal h5,
+.reveal h6 { 
+   margin-bottom: .3em;    
+}
+.reveal small {
+	font-size: 0.85em;
+}
+.reveal section img {
+   border: none;
+   height:50px; 
+   width:50px;
+}
+.reveal pre code {
+  display: block; padding: 0.5em;
+  font-size: 0.9em;
+  line-height: 1.0em;
+  background-color: white;
+  overflow: visible;
+  max-height: none;
+  word-wrap: normal;
+}
+.reveal code {
+  overflow: visible;
+  max-height: none;
+}
+
+.reveal code.r {
+  background-color: #F8F8F8;
+}
+</style>
+Irisshinyapp : Data Product for Linear Descriminant Analysis
+========================================================
+author: UshaKiran.Kota
+date: Aug-22-2015
+autosize: true
+transition: rotate
+transition-speed:slow
+font-family:'Helvetica'
+
+Iris Data set : Notes
+========================================================
+
+<style>
+.reveal ul, 
+.reveal ol {
+    font-size: 20px;
+    color: blue;
+    list-style-type: square;
+}
+
+
+</style>
+A few lines about Iris Data set and the species images :
+
+- <small>Iris data set is popular data set collected by Anderson and published in "The irises of the Gaspe Peninsula", and which originally inspired Fisher to develop Linear Descriminant Analysis Technique</small>
+- <small>Anderson collected and measured hundreds of irises in an
+effort to study variation between and among the dierent
+species</small>
+- <small>There are 260 species of iris; this data set focuses of three of them (Iris setosa,Iris virginica,and Iris versicolor)</small>
+- <small>Four features were measured on 50 samples for each species:
+sepal width, sepal length, petal width, and petal length</small>
+
+***
+<style>
+.reveal section img {
+   border: none;
+   height:50px; 
+   width:50px;
+}
+</style>
+
+![setosa ](images/Iris-setosa-10_1.jpg)
+![versicolor ](images/Iris-versicolor-21_1.jpg)
+![virginica ](images/Iris-virginica-3_1.jpg)
+
+Irisshinyapp: Data Analysis Features
+========================================================
+<style>
+.reveal ul, 
+.reveal ol {
+    font-size: 20px;
+    color: blue;
+    list-style-type: square;
+}
+
+.reveal section img {
+   border: none;
+   height:400px; 
+   width:600px;
+}
+</style>
+Salient Features of Irisshinyapp 
+
+- <small>Irisshinyapp is a sample dataproduct that demonstrates the Technique of Linear Descriminant Analysis</small>
+- <small>The data product is developed as a tabbed application </small>
+- <small>The saliet features of the application are:</small>
+- <small>The ability to display Facts about the LDA on a specific Iris species</small>
+- <small>The exploratory visualization with an option to select and analyse each plot</small>
+- <small>visualize LDA performance and ability to choose to get the sample statistics</small>
+
+
+![Irisshinyapp ](images/Irisshnyapp.jpg)
+
+
+
+Irisshinyapp : Exploratory Views
+========================================================
+
+```{r, fig.height = 6, fig.width =8,echo=FALSE}
+require(ggplot2)
+qplot(Sepal.Length, Petal.Length, data = iris, color = Species, size=Petal.Width,
+            xlab = "Sepal Length", ylab = "Petal Length",
+            main = "Sepal vs. Petal Length in Fisher's Iris data")
+         
+pairs(iris[1:4], main = "Edgar Anderson's Iris Data", pch = 21, bg = c("red", "green3", "blue",height = 600, width = 800)[unclass(iris$Species)])
+      
+```
+Irisshinyapp : LDA components
+========================================================
+```{r, fig.height = 6, fig.width =8,echo=FALSE}
+require(MASS)
+require(scales)
+
+r3 <- lda(Species ~ ., # training model
+                iris, 
+                prior = c(1,1,1)/3 
+                )
+      
+plda = predict(object = r3, # predictions
+                     newdata = iris)
+      
+      
+prop.lda = r3$svd^2/sum(r3$svd^2)
+      
+      
+dataset = data.frame(species = iris[,"Species"],p.width=iris[,"Petal.Width"],
+                           lda = plda$x)
+
+
+ggplot(dataset) + geom_point(aes(lda.LD1, lda.LD2, colour = species, shape = species,size=2.5)) + 
+  ggtitle("Iris Species LD Projections") + 
+  labs(x = paste("LD1 (", percent(prop.lda[1]), ")", sep=""),
+        y = paste("LD2 (", percent(prop.lda[2]), ")", sep="")) + theme(panel.grid.major = element_line(colour = "blue"))   
+
+# 1="setosa"     
+# 2="versicolor" 
+# 3="virginica" 
+
+# Group centroids
+LD1<-prop.lda[1]
+LD2<-prop.lda[2]
+
+print("Classifiers")
+head(plda$class)
+
+print("posterior probabilities")
+head(plda$posterior,3)
+
+print("LD Projections")
+head(plda$x, 3)
+
+
+
+
+```
